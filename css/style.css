@@ -1,0 +1,1033 @@
+/*
+  ================================================================
+  PawBeats - 爪拍 样式表
+  ================================================================
+  文件说明：全局样式与主题定义
+  功能概述：
+    - CSS 自定义属性（变量）定义五种主题配色
+    - 全局重置与基础布局
+    - 头部工具栏、音序器网格、鼓机网格样式
+    - 播放控制面板、模态框、Toast、帮助面板
+    - 音频裁剪界面、粒子特效动画
+    - 响应式适配（移动端）
+  ================================================================
+*/
+
+/* ---------- 全局变量与主题定义 ---------- */
+:root {
+  /* 背景渐变起点与终点 */
+  --bg-start: #0d0d1a;
+  --bg-end: #050510;
+  /* 面板背景：主面板（带模糊）与次面板（纯色/半透明） */
+  --panel: rgba(255,255,255,0.04);
+  --panel-2: rgba(0,0,0,0.35);
+  /* 边框颜色：默认与悬停状态 */
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.15);
+  /* 主题强调色：高亮、半透明、播放列背景 */
+  --accent: #00e5ff;
+  --accent-dim: rgba(0,229,255,0.22);
+  --accent-play: rgba(0,229,255,0.12);
+  /* 文字颜色：主文字、次要文字、更淡文字、反色 */
+  --text: #fff;
+  --text-dim: rgba(255,255,255,0.6);
+  --text-dim-2: rgba(255,255,255,0.4);
+  --text-inverse: #000;
+  /* 步进格子：默认背景、悬停背景、发光阴影 */
+  --cell-bg: rgba(255,255,255,0.04);
+  --cell-hover-bg: rgba(255,255,255,0.08);
+  --cell-shadow: 0 0 12px currentColor;
+  /* 模态框渐变背景 */
+  --modal-start: #1a1a2e;
+  --modal-end: #0f0f1a;
+  /* Toast 提示背景与文字 */
+  --toast-bg: #00e5ff;
+  --toast-text: #000;
+  /* 可视化区域背景 */
+  --viz-bg: rgba(0,0,0,0.4);
+  /* 滚动条颜色 */
+  --scroll: rgba(255,255,255,0.1);
+  --scroll-hover: rgba(255,255,255,0.2);
+  /* 圆角大小：小/中/大/超大 */
+  --r-sm: 5px;
+  --r-md: 6px;
+  --r-lg: 12px;
+  --r-xl: 14px;
+  /* 网格尺寸：格子边长与间隙 */
+  --cell: 44px;
+  --cell-gap: 2px;
+  /* 字体：系统无衬线 + 等宽字体 */
+  --font: 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Courier New', monospace;
+}
+
+/* ---------- 主题覆盖：赛博朋克、复古终端、明亮工作室、线框蓝图、海洋沙滩 ---------- */
+
+/* 复古终端主题：黑底绿字，CRT 风格，无圆角 */
+html[data-theme="retro"] {
+  --bg-start: #000;
+  --bg-end: #001000;
+  --panel: rgba(0,60,0,0.2);
+  --panel-2: rgba(0,20,0,0.5);
+  --border: rgba(57,255,20,0.25);
+  --border-hover: rgba(57,255,20,0.4);
+  --accent: #39ff14;
+  --accent-dim: rgba(57,255,20,0.25);
+  --accent-play: rgba(57,255,20,0.12);
+  --text: #39ff14;
+  --text-dim: rgba(57,255,20,0.6);
+  --text-dim-2: rgba(57,255,20,0.35);
+  --text-inverse: #000;
+  --cell-bg: rgba(57,255,20,0.04);
+  --cell-hover-bg: rgba(57,255,20,0.08);
+  --cell-shadow: 0 0 12px currentColor;
+  --modal-start: #001a00;
+  --modal-end: #000a00;
+  --toast-bg: #39ff14;
+  --toast-text: #000;
+  --viz-bg: rgba(0,30,0,0.5);
+  --scroll: rgba(57,255,20,0.15);
+  --scroll-hover: rgba(57,255,20,0.3);
+  --r-sm: 0px;
+  --r-md: 0px;
+  --r-lg: 0px;
+  --r-xl: 0px;
+  --font: 'Courier New', monospace;
+}
+
+/* 明亮工作室主题：浅灰背景，深蓝强调色 */
+html[data-theme="light"] {
+  --bg-start: #f2f2f7;
+  --bg-end: #e6e6ed;
+  --panel: rgba(255,255,255,0.7);
+  --panel-2: #ffffff;
+  --border: rgba(0,0,0,0.08);
+  --border-hover: rgba(0,0,0,0.15);
+  --accent: #0066ff;
+  --accent-dim: rgba(0,102,255,0.22);
+  --accent-play: rgba(0,102,255,0.12);
+  --text: #1a1a1a;
+  --text-dim: rgba(0,0,0,0.5);
+  --text-dim-2: rgba(0,0,0,0.35);
+  --text-inverse: #fff;
+  --cell-bg: rgba(0,0,0,0.04);
+  --cell-hover-bg: rgba(0,0,0,0.07);
+  --cell-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  --modal-start: #ffffff;
+  --modal-end: #f0f0f5;
+  --toast-bg: #0066ff;
+  --toast-text: #fff;
+  --viz-bg: rgba(200,200,210,0.4);
+  --scroll: rgba(0,0,0,0.12);
+  --scroll-hover: rgba(0,0,0,0.2);
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+  --r-xl: 12px;
+  --font: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* 线框蓝图主题：纯黑背景，洋红边框，透明面板 */
+html[data-theme="wire"] {
+  --bg-start: #000;
+  --bg-end: #000;
+  --panel: transparent;
+  --panel-2: transparent;
+  --border: rgba(255,0,255,0.25);
+  --border-hover: rgba(255,0,255,0.6);
+  --accent: #ff00ff;
+  --accent-dim: rgba(255,0,255,0.3);
+  --accent-play: rgba(255,0,255,0.12);
+  --text: #ff66ff;
+  --text-dim: rgba(255,102,255,0.6);
+  --text-dim-2: rgba(255,102,255,0.35);
+  --text-inverse: #000;
+  --cell-bg: transparent;
+  --cell-hover-bg: rgba(255,0,255,0.04);
+  --cell-shadow: none;
+  --modal-start: #000;
+  --modal-end: #0a000a;
+  --toast-bg: #ff00ff;
+  --toast-text: #fff;
+  --viz-bg: rgba(20,0,20,0.3);
+  --scroll: rgba(255,0,255,0.12);
+  --scroll-hover: rgba(255,0,255,0.25);
+  --r-sm: 0px;
+  --r-md: 0px;
+  --r-lg: 0px;
+  --r-xl: 0px;
+  --font: 'Courier New', monospace;
+}
+
+/* 海洋沙滩主题：天蓝到米黄渐变，珊瑚橙强调色，大圆角 */
+html[data-theme="ocean"] {
+  --bg-start: #d4f1f4;
+  --bg-end: #fef9e7;
+  --panel: rgba(255,255,255,0.6);
+  --panel-2: rgba(255,255,255,0.8);
+  --border: rgba(0,100,120,0.12);
+  --border-hover: rgba(0,100,120,0.2);
+  --accent: #ff7f50;
+  --accent-dim: rgba(255,127,80,0.25);
+  --accent-play: rgba(255,127,80,0.12);
+  --text: #1a3a4a;
+  --text-dim: rgba(26,58,74,0.5);
+  --text-dim-2: rgba(26,58,74,0.35);
+  --text-inverse: #fff;
+  --cell-bg: rgba(0,100,120,0.04);
+  --cell-hover-bg: rgba(0,100,120,0.07);
+  --cell-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  --modal-start: #ffffff;
+  --modal-end: #e8f4f8;
+  --toast-bg: #ff7f50;
+  --toast-text: #fff;
+  --viz-bg: rgba(180,210,220,0.4);
+  --scroll: rgba(0,100,120,0.12);
+  --scroll-hover: rgba(0,100,120,0.2);
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 16px;
+  --r-xl: 18px;
+  --font: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* 复古主题 CRT 扫描线特效 */
+html[data-theme="retro"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(57,255,20,0.03) 2px,
+    rgba(57,255,20,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ---------- 基础重置与页面布局 ---------- */
+
+/* 全局盒模型重置：边框内缩，方便计算尺寸 */
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body {
+  width:100%; height:100%; overflow:hidden;
+  font-family: var(--font);
+  /* 径向渐变背景：中心亮、边缘暗，营造氛围感 */
+  background: radial-gradient(circle at 50% 30%, var(--bg-start), var(--bg-end));
+  color: var(--text);
+  user-select: none; /* 禁止文本选择，避免拖拽干扰 */
+}
+
+/* 应用根容器：垂直 flex 布局，占满视口 */
+.app { width:100%; height:100vh; display:flex; flex-direction:column; }
+
+/* 顶部工具栏 */
+.header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 8px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}
+/* Logo 文字：渐变色彩，随主题变化 */
+.header-logo h1 {
+  font-size: 16px;
+  background: linear-gradient(90deg, #ff00cc, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+html[data-theme="retro"] .header-logo h1 {
+  background: linear-gradient(90deg, #39ff14, #00ff88);
+  -webkit-background-clip: text;
+}
+html[data-theme="light"] .header-logo h1 {
+  background: linear-gradient(90deg, #0066ff, #00aaff);
+  -webkit-background-clip: text;
+}
+html[data-theme="wire"] .header-logo h1 {
+  background: linear-gradient(90deg, #ff00ff, #aa00ff);
+  -webkit-background-clip: text;
+}
+html[data-theme="ocean"] .header-logo h1 {
+  background: linear-gradient(90deg, #00bcd4, #ff7f50);
+  -webkit-background-clip: text;
+}
+/* 工具栏按钮组：水平排列，间距 8px */
+.header-actions { display:flex; gap: 8px; }
+/* 工具栏通用按钮：半透明背景 + 边框 */
+.header-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 6px 14px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all .2s;
+}
+/* 工具栏按钮悬停效果 */
+.header-btn:hover { border-color: var(--accent); color: var(--text); }
+/* 危险操作（清空）悬停变红色 */
+.header-btn.danger:hover { border-color: #ff4444; color: var(--text); }
+
+/* 主内容区：占满剩余空间，垂直 flex 排列 */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; padding: 10px; gap: 8px; }
+
+/* ---------- 旋律音序器区域 ---------- */
+.seq-wrapper { flex:1; overflow:auto; display:flex; justify-content:center; align-items:flex-start; padding: 4px; gap: 8px; }
+
+/* 素材库侧边栏：显示 8 个采样槽位，宽度固定 150px */
+.sample-panel {
+  width: 150px; flex-shrink: 0;
+  background: var(--panel-2);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  padding: 8px;
+  display: flex; flex-direction: column; gap: 6px;
+  overflow-y: auto;
+  position: sticky; /* 滚动时保持固定在顶部 */
+  top: 10px;
+  align-self: flex-start;
+}
+.sample-panel-title {
+  font-size: 10px; color: var(--text-dim-2);
+  text-align: center; letter-spacing: 1px;
+  padding-bottom: 4px; border-bottom: 1px solid var(--border);
+}
+/* 预设分类面板（最左侧图标栏）：切换合成器/猫叫/狗叫等分类，宽度 52px */
+.preset-panel {
+  width: 52px; flex-shrink: 0;
+  background: var(--panel-2);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  padding: 8px 4px;
+  display: flex; flex-direction: column; gap: 6px;
+  overflow-y: auto;
+  position: sticky;
+  top: 10px;
+  align-self: flex-start;
+}
+.preset-panel-title {
+  font-size: 9px; color: var(--text-dim-2);
+  text-align: center; letter-spacing: 1px;
+  padding-bottom: 4px; border-bottom: 1px solid var(--border);
+}
+.preset-list {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.preset-btn {
+  padding: 6px 2px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--cell-bg);
+  color: var(--text-dim);
+  font-size: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  line-height: 1;
+}
+.preset-btn:hover { background: var(--cell-hover-bg); color: var(--text); border-color: var(--border-hover); }
+.preset-btn.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: 0 0 6px var(--accent-dim);
+}
+/* 素材槽位：一行显示颜色块+名称+预览按钮 */
+.sample-slot {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px;
+  border-radius: var(--r-md);
+  background: var(--cell-bg);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all .15s;
+  position: relative;
+}
+.sample-slot:hover { background: var(--cell-hover-bg); }
+/* 选中状态：边框变为主题色，带发光阴影 */
+.sample-slot.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-dim);
+}
+/* 素材槽位内元素：颜色块、名称、预览按钮、上传按钮 */
+.sample-slot .slot-color {
+  width: 16px; height: 16px; border-radius: var(--r-sm); flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+/* 名称文本：自动截断显示省略号 */
+.sample-slot .slot-name {
+  font-size: 9px; color: var(--text-dim);
+  flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+/* 预览按钮：点击播放采样声音 */
+.sample-slot .slot-preview {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: rgba(0,0,0,0.4); color: #fff;
+  font-size: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: 1px solid var(--border); flex-shrink: 0;
+}
+.sample-slot .slot-preview:hover { background: rgba(255,255,255,0.2); transform: scale(1.2); }
+/* 上传按钮：用户分类下显示，绿色表示已上传 */
+.sample-slot .slot-upload {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: rgba(0,0,0,0.4); color: #fff;
+  font-size: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: 1px solid var(--border); flex-shrink: 0;
+}
+.sample-slot .slot-upload:hover { background: rgba(255,255,255,0.2); }
+.sample-slot .slot-upload.has-sample { background: #39ff14; color: #000; }
+
+html[data-theme="light"] .sample-slot .slot-upload {
+  background: rgba(0,0,0,0.08); color: var(--text);
+}
+html[data-theme="light"] .sample-slot .slot-upload:hover {
+  background: rgba(0,0,0,0.15);
+}
+html[data-theme="wire"] .sample-slot .slot-upload.has-sample,
+html[data-theme="wire"] .row-label .upload-btn.has-sample,
+html[data-theme="wire"] .drum-label .upload-btn.has-sample {
+  background: var(--accent); color: var(--text-inverse); border-color: var(--accent);
+}
+
+/* 旋律网格滚动容器：背景面板 + 圆角边框 */
+.seq-scroll {
+  overflow: auto;
+  padding: 8px;
+  background: var(--panel-2);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+}
+
+/* 音序器网格：CSS Grid 布局，52px 标签 + 16 个等宽列 */
+.seq-grid {
+  display: grid;
+  grid-template-columns: 52px repeat(16, var(--cell));
+  grid-auto-rows: var(--cell);
+  gap: var(--cell-gap);
+}
+
+/* 音序器左侧音高标签：显示 C4~C5 音符名 */
+.row-label {
+  width: 52px; height: var(--cell);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--cell-bg);
+  color: var(--text);
+  position: relative;
+}
+
+/* 音序器步进格子：13行×16列，点击循环切换 空→力度1→力度2→力度3→空 */
+.step-cell {
+  width: var(--cell); height: var(--cell);
+  background: var(--cell-bg);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all .1s;
+  position: relative;
+}
+.step-cell:hover { background: var(--cell-hover-bg); border-color: var(--border-hover); }
+/* 激活状态：使用当前素材的颜色填充，带发光 */
+.step-cell.active {
+  background: currentColor;
+  box-shadow: var(--cell-shadow);
+  border-color: currentColor;
+}
+/* 播放指示列：当前正在播放的整列高亮 */
+.step-cell.play-col {
+  background: var(--accent-play);
+  border-color: var(--accent);
+  transition: background 0.25s ease-out, border-color 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+
+/* 音符力度视觉样式：vel-1 轻（半透明虚线）、vel-2 中（默认）、vel-3 重（放大发光脉冲） */
+.step-cell.active.vel-1 {
+  opacity: 0.5;
+  border-style: dotted;
+}
+.step-cell.active.vel-2 {
+  /* 正常，无需额外样式 */
+}
+.step-cell.active.vel-3 {
+  transform: scale(1.12);
+  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  filter: brightness(1.4);
+  animation: vel3-pulse 0.3s ease-out;
+}
+/* 力度 3 脉冲动画：点击时放大后回弹，模拟重击感 */
+@keyframes vel3-pulse {
+  0% { transform: scale(1.25); filter: brightness(1.8); }
+  100% { transform: scale(1.12); filter: brightness(1.4); }
+}
+
+/* 线框主题：激活格子透明背景 + 内发光边框 */
+html[data-theme="wire"] .step-cell.active,
+html[data-theme="wire"] .drum-cell.active {
+  background: transparent;
+  box-shadow: inset 0 0 8px var(--accent-dim);
+  border-width: 2px;
+}
+html[data-theme="wire"] .step-cell.active.vel-3 {
+  box-shadow: inset 0 0 8px var(--accent-dim), 0 0 10px currentColor, 0 0 20px currentColor;
+}
+html[data-theme="wire"] .drum-cell.active.vel-3 {
+  box-shadow: inset 0 0 8px var(--accent-dim), 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+/* ---------- 播放控制面板 ---------- */
+/* 包含播放/停止按钮、BPM滑块、音量滑块、波形选择、Swing、效果器开关等 */
+.controls {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; flex-wrap: wrap;
+  padding: 8px 16px;
+  background: var(--panel);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px); /* 毛玻璃效果 */
+  flex-shrink: 0;
+}
+.ctrl-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+html[data-theme="retro"] .ctrl-btn,
+html[data-theme="wire"] .ctrl-btn {
+  border-radius: var(--r-md);
+}
+/* 播放按钮：主题色高亮，带发光阴影 */
+.ctrl-btn.play { background: var(--accent); color: var(--text-inverse); box-shadow: 0 0 15px var(--accent-dim); }
+.ctrl-btn.play:hover { transform: scale(1.08); }
+/* 停止按钮：默认样式 */
+.ctrl-btn.stop { background: var(--cell-bg); color: var(--text-dim); border: 1px solid var(--border); }
+.ctrl-btn.stop:hover { background: var(--cell-hover-bg); color: var(--text); }
+
+/* 控制组：标签 + 输入控件 + 数值显示 */
+.ctrl-group { display: flex; align-items: center; gap: 6px; }
+.ctrl-group label { font-size: 10px; color: var(--text-dim-2); text-transform: uppercase; letter-spacing: 1px; }
+/* 自定义滑块样式：去除默认外观，细条圆点 */
+.ctrl-group input[type="range"] {
+  -webkit-appearance: none; width: 90px; height: 4px;
+  background: var(--cell-bg); border-radius: 2px; outline: none;
+}
+.ctrl-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent); cursor: pointer;
+}
+/* 下拉选择框 */
+.ctrl-group select {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 4px 8px; font-size: 12px; outline: none;
+}
+/* 数值显示：等宽字体，固定宽度保持对齐 */
+.ctrl-value { font-family: var(--font-mono); font-size: 11px; color: var(--accent); min-width: 30px; text-align: center; }
+
+/* ---------- 鼓机区域 ---------- */
+.drum-wrapper { overflow:auto; display:flex; justify-content:center; align-items:flex-start; padding: 4px; gap: 8px; }
+
+/* 鼓机预设面板 */
+.drum-preset-panel {
+  width: 52px; flex-shrink: 0;
+  background: var(--panel-2);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  padding: 8px 4px;
+  display: flex; flex-direction: column; gap: 6px;
+  align-self: flex-start;
+}
+.drum-preset-title {
+  font-size: 9px; color: var(--text-dim-2);
+  text-align: center; letter-spacing: 1px;
+  padding-bottom: 4px; border-bottom: 1px solid var(--border);
+}
+.drum-preset-list {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.drum-preset-btn {
+  padding: 6px 2px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--cell-bg);
+  color: var(--text-dim);
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  line-height: 1;
+}
+.drum-preset-btn:hover { background: var(--cell-hover-bg); color: var(--text); border-color: var(--border-hover); }
+.drum-preset-btn.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: 0 0 6px var(--accent-dim);
+}
+/* 鼓机网格滚动容器 */
+.drum-scroll {
+  overflow: auto;
+  padding: 8px;
+  background: var(--panel-2);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+}
+/* 鼓机网格：72px 标签（比旋律宽，容纳更多按钮）+ 16 列 */
+.drum-grid {
+  display: grid;
+  grid-template-columns: 72px repeat(16, var(--cell));
+  grid-auto-rows: var(--cell);
+  gap: var(--cell-gap);
+}
+
+/* 鼓轨道标签：含上传、静音、独奏、随机按钮 */
+.drum-label {
+  width: 72px; height: var(--cell);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--cell-bg);
+  color: var(--text);
+  position: relative;
+}
+/* 上传按钮：位于标签右上角，14px 圆形 */
+.row-label .upload-btn, .drum-label .upload-btn {
+  position: absolute; right: 2px; top: 2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: rgba(0,0,0,0.5); color: #fff;
+  font-size: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: 1px solid var(--border); line-height: 1; z-index: 5;
+}
+.row-label .upload-btn:hover, .drum-label .upload-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.2); }
+/* 已上传状态：绿色背景 */
+.row-label .upload-btn.has-sample, .drum-label .upload-btn.has-sample { background: #39ff14; color: #000; border-color: #39ff14; }
+
+/* 静音(M)与独奏(S)按钮：7px 小字，紧贴标签 */
+.row-mute, .row-solo, .drum-mute, .drum-solo {
+  font-size: 7px; padding: 1px 3px; border-radius: 2px;
+  background: var(--cell-bg); color: var(--text-dim-2);
+  cursor: pointer; margin-left: 1px; line-height: 1;
+  border: 1px solid var(--border);
+}
+/* 静音激活：红色 */
+.row-mute.active, .drum-mute.active { background: #ff4444; color: #fff; border-color: #ff4444; }
+/* 独奏激活：黄色 */
+.row-solo.active, .drum-solo.active { background: #ffaa00; color: #000; border-color: #ffaa00; }
+.row-mute:hover, .row-solo:hover, .drum-mute:hover, .drum-solo:hover { background: var(--cell-hover-bg); }
+/* 静音行：整体透明度降低 */
+.row-label.muted, .drum-label.muted { opacity: 0.3; }
+
+/* 随机按钮（🎲）： melody 在右上角，drum 在左上角 */
+.row-dice {
+  position: absolute; right: 2px; top: 2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: rgba(0,0,0,0.4); color: #fff;
+  font-size: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: 1px solid var(--border); line-height: 1; z-index: 5;
+}
+.row-dice:hover { background: rgba(255,255,255,0.25); transform: scale(1.2); }
+.drum-dice {
+  position: absolute; left: 2px; top: 2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: rgba(0,0,0,0.4); color: #fff;
+  font-size: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: 1px solid var(--border); line-height: 1; z-index: 5;
+}
+.drum-dice:hover { background: rgba(255,255,255,0.25); transform: scale(1.2); }
+
+html[data-theme="light"] .row-label .upload-btn,
+html[data-theme="light"] .drum-label .upload-btn {
+  background: rgba(0,0,0,0.08); color: var(--text);
+}
+html[data-theme="light"] .row-label .upload-btn:hover,
+html[data-theme="light"] .drum-label .upload-btn:hover {
+  background: rgba(0,0,0,0.15);
+}
+html[data-theme="light"] .row-dice,
+html[data-theme="light"] .drum-dice {
+  background: rgba(0,0,0,0.08); color: var(--text);
+}
+html[data-theme="light"] .row-dice:hover,
+html[data-theme="light"] .drum-dice:hover {
+  background: rgba(0,0,0,0.15);
+}
+
+html[data-theme="ocean"] .sample-slot .slot-upload {
+  background: rgba(0,100,120,0.1); color: var(--text);
+}
+html[data-theme="ocean"] .sample-slot .slot-upload:hover {
+  background: rgba(0,100,120,0.18);
+}
+html[data-theme="ocean"] .row-label .upload-btn,
+html[data-theme="ocean"] .drum-label .upload-btn {
+  background: rgba(0,100,120,0.1); color: var(--text);
+}
+html[data-theme="ocean"] .row-label .upload-btn:hover,
+html[data-theme="ocean"] .drum-label .upload-btn:hover {
+  background: rgba(0,100,120,0.18);
+}
+html[data-theme="ocean"] .row-dice,
+html[data-theme="ocean"] .drum-dice {
+  background: rgba(0,100,120,0.1); color: var(--text);
+}
+html[data-theme="ocean"] .row-dice:hover,
+html[data-theme="ocean"] .drum-dice:hover {
+  background: rgba(0,100,120,0.18);
+}
+
+/* 鼓机步进格子：4轨道×16列，与旋律格子样式一致 */
+.drum-cell {
+  width: var(--cell); height: var(--cell);
+  background: var(--cell-bg);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all .1s;
+}
+.drum-cell:hover { background: var(--cell-hover-bg); border-color: var(--border-hover); }
+.drum-cell.active {
+  background: currentColor;
+  box-shadow: var(--cell-shadow);
+  border-color: currentColor;
+}
+.drum-cell.play-col {
+  background: var(--accent-play);
+  border-color: var(--accent);
+  transition: background 0.25s ease-out, border-color 0.25s ease-out, box-shadow 0.25s ease-out;
+}
+
+/* 鼓力度视觉样式 */
+.drum-cell.active.vel-1 {
+  opacity: 0.5;
+  border-style: dotted;
+}
+.drum-cell.active.vel-2 {
+  /* 正常，无需额外样式 */
+}
+.drum-cell.active.vel-3 {
+  transform: scale(1.12);
+  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  filter: brightness(1.4);
+  animation: vel3-pulse 0.3s ease-out;
+}
+
+/* 节拍旋转指示器：圆形表盘 + 指针，播放时随 16 步循环旋转 */
+.beat-spinner {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 2px solid var(--accent);
+  position: relative; flex-shrink: 0;
+}
+/* 表盘中心点 */
+.beat-spinner::before {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--accent); transform: translate(-50%, -50%);
+}
+/* 指针：从中心向上，通过 rotate 改变角度 */
+.spinner-arm {
+  position: absolute; top: 4px; left: 50%;
+  width: 2px; height: 12px; background: var(--accent);
+  transform-origin: bottom center;
+  margin-left: -1px;
+  transition: transform 0.15s ease-out;
+}
+
+/* 音频可视化区域：固定高度 70px，Canvas 填满 */
+.viz-area { height: 70px; flex-shrink: 0; background: var(--viz-bg); border-radius: var(--r-sm); border: 1px solid var(--border); overflow: hidden; }
+#viz-canvas { width: 100%; height: 100%; display: block; }
+
+/* ---------- 模态框与 Toast ---------- */
+/* 模态框遮罩层：全屏半透明黑 + 模糊，默认隐藏 */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10000; backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+/* 显示状态：不透明且可点击 */
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+/* 模态框内容区：渐变背景 */
+.modal-box {
+  background: linear-gradient(135deg, var(--modal-start), var(--modal-end));
+  border: 1px solid var(--border); border-radius: var(--r-xl);
+  padding: 28px; max-width: 380px; text-align: center;
+}
+.modal-box h2 { font-size: 14px; margin-bottom: 10px; color: var(--text); }
+.modal-box p { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; }
+.modal-actions { display: flex; gap: 10px; justify-content: center; }
+.modal-btn { padding: 8px 22px; border-radius: var(--r-md); border: 1px solid var(--border); cursor: pointer; font-size: 12px; transition: all .2s; color: var(--text); }
+/* 确认按钮：主题色填充 */
+.modal-btn.confirm { background: var(--accent); color: var(--text-inverse); border-color: var(--accent); }
+/* 取消按钮：透明背景 */
+.modal-btn.cancel { background: transparent; color: var(--text-dim); }
+
+/* Toast 提示：右下角滑入，2秒后自动消失 */
+.toast {
+  position: fixed; bottom: 18px; right: 18px;
+  padding: 10px 18px; border-radius: var(--r-md);
+  background: var(--toast-bg); color: var(--toast-text);
+  font-size: 12px; font-weight: 600;
+  opacity: 0; transform: translateY(16px);
+  pointer-events: none; transition: all .3s;
+  z-index: 10001;
+}
+
+/* ---------- 主题选择器、粒子特效、帮助面板 ---------- */
+/* Toast 显示动画 */
+.toast.show { opacity: 1; transform: translateY(0); }
+/* 警告样式：黄色 */
+.toast.warn { background: #ffaa00; color: #000; }
+/* 错误样式：红色 */
+.toast.err { background: #ff4444; color: #fff; }
+
+/* 自定义滚动条：WebKit 浏览器，4px 细条 */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scroll); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-hover); }
+
+/* 主题选择器：五个圆形色块切换主题 */
+.theme-picker {
+  display: flex; align-items: center; gap: 6px;
+}
+.theme-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer; transition: all .2s;
+}
+.theme-dot:hover { transform: scale(1.2); }
+.theme-dot.active { border-color: #fff; box-shadow: 0 0 6px rgba(255,255,255,0.5); }
+html[data-theme="light"] .theme-dot.active { border-color: #1a1a1a; box-shadow: 0 0 6px rgba(0,0,0,0.3); }
+html[data-theme="ocean"] .theme-dot.active { border-color: #1a3a4a; box-shadow: 0 0 6px rgba(0,0,0,0.2); }
+.theme-dot.cyber { background: linear-gradient(135deg, #ff00cc, #00e5ff); }
+.theme-dot.retro { background: #39ff14; }
+.theme-dot.light { background: linear-gradient(135deg, #f2f2f7, #0066ff); }
+.theme-dot.wire { background: linear-gradient(135deg, #ff00ff, #000); }
+.theme-dot.ocean { background: linear-gradient(135deg, #00bcd4, #ff7f50); }
+
+/* 粒子特效：点击格子时迸发的彩色粒子 */
+.particle {
+  position: fixed;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  animation: particle-fly 0.5s ease-out forwards;
+}
+@keyframes particle-fly {
+  0% { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+}
+
+/* 效果器开关按钮：粒子/反向/混响/延迟等 */
+.particle-toggle {
+  width: 28px; height: 28px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--cell-bg);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+}
+/* 开启状态：主题色高亮 + 发光 */
+.particle-toggle.on {
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent-dim);
+}
+#btn-viz { width: auto; min-width: 36px; padding: 0 6px; font-size: 11px; }
+.controls .header-btn { padding: 6px 12px; font-size: 12px; }
+
+/* ---------- 工具栏下拉框与分隔线 ---------- */
+/* 工程和预制下拉框：放在顶部工具栏内 */
+.header-select {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 5px 10px; font-size: 12px; outline: none;
+  min-width: 90px; max-width: 140px; cursor: pointer;
+  transition: border-color .2s;
+}
+.header-select:hover { border-color: var(--border-hover); }
+.header-select option { background: var(--panel-2); color: var(--text); }
+/* 工具栏分组分隔线 */
+.header-sep {
+  width: 1px; height: 20px; background: var(--border); margin: 0 4px; flex-shrink: 0;
+}
+
+/* ---------- 音频裁剪模态框 ---------- */
+/* 裁剪对话框：比确认框更宽（640px），容纳波形图 */
+.crop-box { max-width: 640px; width: 90vw; padding: 24px; }
+.crop-box h2 { font-size: 14px; margin-bottom: 6px; color: var(--text); }
+.crop-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; }
+/* 波形图容器：120px 高，十字准线光标表示可拖动 */
+.crop-waveform-wrap {
+  position: relative;
+  width: 100%; height: 120px;
+  background: var(--panel-2);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  cursor: crosshair;
+  user-select: none;
+}
+#crop-canvas { width: 100%; height: 100%; display: block; }
+/* 裁剪选区：半透明主题色填充，左右边框标记起止点 */
+.crop-region {
+  position: absolute; top: 0; bottom: 0;
+  background: var(--accent-dim);
+  border-left: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+  pointer-events: none;
+  z-index: 2;
+}
+/* 选区外遮罩：深色半透明，突出选中区域 */
+.crop-overlay {
+  position: absolute; top: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  pointer-events: none;
+  z-index: 1;
+}
+.crop-overlay.left { left: 0; }
+.crop-overlay.right { right: 0; }
+/* 时间显示条：等宽字体显示起止时间和时长 */
+.crop-timebar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 10px; font-size: 11px; color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+/* 裁剪操作按钮：确认 + 取消 */
+.crop-actions {
+  display: flex; gap: 10px; justify-content: center; margin-top: 16px;
+}
+
+/* ---------- 快捷键帮助面板 ---------- */
+/* 右侧滑出面板：默认隐藏在屏幕外（right: -320px），显示时滑入 */
+.help-panel {
+  position: fixed;
+  top: 0; right: -320px;
+  width: 300px; height: 100vh;
+  background: var(--panel-2);
+  border-left: 1px solid var(--border);
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 20px 16px;
+  transition: right .3s ease;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.3);
+}
+.help-panel.show {
+  right: 0;
+}
+/* 帮助面板标题栏：主题色标题 + 关闭按钮 */
+.help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--accent);
+}
+.help-close {
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--text-dim);
+  transition: color .2s;
+}
+.help-close:hover { color: var(--text); }
+/* 帮助内容分区 */
+.help-section {
+  margin-bottom: 14px;
+}
+/* 分区标题：大写字母 + 主题色 + 虚线分隔 */
+.help-title {
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed var(--border);
+}
+/* 快捷键行：按键 + 说明文字 */
+.help-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+/* 按键样式：小圆角矩形，等宽字体 */
+.help-row kbd {
+  display: inline-block;
+  min-width: 24px;
+  padding: 2px 6px;
+  background: var(--cell-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text);
+  text-align: center;
+  white-space: nowrap;
+}
+.help-row span {
+  color: var(--text-dim-2);
+}
+/* 鼠标操作标签：浅色背景 + 主题色文字 */
+.help-mouse {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--accent-dim);
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.help-toggle {
+  position: relative;
+}
+.help-toggle::after {
+  content: 'H';
+  position: absolute;
+  top: -2px; right: -2px;
+  font-size: 8px;
+  background: var(--accent);
+  color: #000;
+  border-radius: 50%;
+  width: 14px; height: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: bold;
+}
+
+/* ---------- 响应式适配：小屏幕设备（平板/手机） ---------- */
+/* 当屏幕宽度小于 768px 时：缩小格子、标签、按钮和滑块 */
+@media (max-width: 768px) {
+  :root { --cell: 34px; }
+  .seq-grid, .drum-grid { grid-template-columns: 40px repeat(16, var(--cell)); }
+  .row-label, .drum-label { width: 40px; font-size: 9px; }
+  .header-btn { padding: 5px 10px; font-size: 11px; }
+  .ctrl-group input[type="range"] { width: 60px; }
+}
+
+

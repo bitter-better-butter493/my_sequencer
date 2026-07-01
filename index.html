@@ -1,0 +1,295 @@
+<!--
+  ================================================================
+  PawBeats - 爪拍
+  ================================================================
+  文件说明：主页面 HTML 结构
+  功能概述：定义 PawBeats 音序器应用的完整用户界面，包含
+           - 顶部工具栏（保存、加载、主题切换等）
+           - 旋律音序器网格（16步 × 13音高）
+           - 鼓机网格（16步 × 4轨道）
+           - 播放控制面板（BPM、音量、效果器等）
+           - 音频可视化区域
+           - 模态框（确认对话框、音频裁剪）
+           - 快捷键帮助面板
+  ================================================================
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PawBeats - 爪拍</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <!-- 顶部工具栏：包含 Logo、操作按钮、主题切换器 -->
+  <header class="header">
+    <div class="header-logo">
+      <h1>🐾 PawBeats</h1>
+    </div>
+    <!-- 工具栏按钮组：工程管理、预制管理、编辑操作、主题切换 -->
+  <div class="header-actions">
+      <!-- 工程管理：下拉框选择 + 保存/删除 -->
+      <select id="project-select" class="header-select" onchange="loadSelectedProject(this.value)">
+        <option value="">📂 工程...</option>
+      </select>
+      <button class="header-btn" onclick="doSaveProject()" title="保存当前工程">💾</button>
+      <button class="header-btn danger" onclick="doDeleteProject()" title="删除选中工程">🗑</button>
+      <div class="header-sep"></div>
+      <!-- 预制管理：下拉框选择 + 保存/删除 -->
+      <select id="sample-preset-select" class="header-select" onchange="loadSamplePreset(this.value); this.value='';">
+        <option value="">🎵 预制...</option>
+      </select>
+      <button class="header-btn" onclick="doSaveSamplePreset()" title="保存当前素材为预制">📦</button>
+      <button class="header-btn danger" onclick="doDeleteSamplePreset()" title="删除选中预制">🗑</button>
+      <div class="header-sep"></div>
+      <!-- 编辑操作 -->
+      <button class="header-btn" onclick="doCopy()">📋 复制</button>
+      <button class="header-btn" onclick="doPaste()">📌 粘贴</button>
+      <button class="header-btn danger" onclick="doClear()">🗑 清空</button>
+      <button class="header-btn" onclick="doRandom()">🎲 随机</button>
+      <button class="header-btn" onclick="exportWav()">📥 导出</button>
+      <button class="header-btn help-toggle" onclick="toggleHelpPanel()">⌨ 快捷键</button>
+      <!-- 主题选择器：5 种配色方案一键切换 -->
+      <div class="theme-picker">
+        <div class="theme-dot cyber active" data-theme="cyber" onclick="setTheme('cyber')" title="赛博朋克"></div>
+        <div class="theme-dot retro" data-theme="retro" onclick="setTheme('retro')" title="复古终端"></div>
+        <div class="theme-dot light" data-theme="light" onclick="setTheme('light')" title="明亮工作室"></div>
+        <div class="theme-dot wire" data-theme="wire" onclick="setTheme('wire')" title="线框蓝图"></div>
+        <div class="theme-dot ocean" data-theme="ocean" onclick="setTheme('ocean')" title="海洋沙滩"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区：旋律音序器、鼓机、控制面板、可视化 -->
+  <div class="main">
+    <!-- 旋律音序器区域：包含预设面板、素材库、16步音高网格 -->
+    <div class="seq-wrapper">
+      <!-- 预设分类面板：切换合成器/猫叫/狗叫/哈基米等素材类型 -->
+      <div class="preset-panel" id="preset-panel">
+        <div class="preset-panel-title">预设</div>
+        <div class="preset-list" id="preset-list"></div>
+      </div>
+      <!-- 素材库面板：显示当前分类下的8个可点击素材槽位 -->
+      <div class="sample-panel" id="sample-panel">
+        <div class="sample-panel-title">🎵 素材库</div>
+        <div class="sample-list" id="sample-list"></div>
+      </div>
+      <!-- 旋律音序网格：13行音高 × 16列步进，由 JS 动态生成 -->
+      <!-- 旋律音序网格容器：横向滚动以适应小屏幕 -->
+      <div class="seq-scroll">
+        <div class="seq-grid" id="seq-grid"></div>
+      </div>
+    </div>
+
+    <!-- 鼓机区域：4轨道鼓组 × 16列步进 -->
+    <!-- 鼓机区域：左侧预设面板 + 右侧 4×16 网格 -->
+    <div class="drum-wrapper">
+      <div class="drum-preset-panel" id="drum-preset-panel">
+        <div class="drum-preset-title">节奏</div>
+        <div class="drum-preset-list" id="drum-preset-list"></div>
+      </div>
+      <div class="drum-scroll">
+        <div class="drum-grid" id="drum-grid"></div>
+      </div>
+    </div>
+
+    <!-- 播放控制面板：播放/停止、BPM、音量、波形、Swing、效果器等 -->
+    <div class="controls">
+      <!-- 播放与停止按钮 -->
+      <button class="ctrl-btn play" id="btn-play" onclick="togglePlay()">▶</button>
+      <button class="ctrl-btn stop" onclick="doStop()">⏹</button>
+      <!-- 节拍旋转指示器：随播放步进旋转 -->
+      <div class="beat-spinner" id="beat-spinner">
+        <div class="spinner-arm" id="spinner-arm"></div>
+      </div>
+
+      <!-- BPM 控制：速度范围 60-200 -->
+      <div class="ctrl-group">
+        <label>BPM</label>
+        <input type="range" id="bpm-range" min="60" max="200" value="128">
+        <span class="ctrl-value" id="bpm-val">128</span>
+      </div>
+      <button class="header-btn" id="btn-tap" onclick="tapTempo()">👆 Tap</button>
+
+      <!-- 主音量控制：范围 0-100 -->
+      <div class="ctrl-group">
+        <label>音量</label>
+        <input type="range" id="vol-range" min="0" max="100" value="80">
+        <span class="ctrl-value" id="vol-val">80</span>
+      </div>
+
+      <!-- 合成器波形选择：影响内置合成器音色 -->
+      <div class="ctrl-group">
+        <label>波形</label>
+        <select id="wave-select">
+          <option value="triangle">三角波</option>
+          <option value="sine">正弦波</option>
+          <option value="square">方波</option>
+          <option value="sawtooth">锯齿波</option>
+        </select>
+      </div>
+
+      <!-- Swing 控制：增加奇数步的延迟，产生摇摆感 -->
+      <div class="ctrl-group">
+        <label>Swing</label>
+        <input type="range" id="swing-range" min="0" max="50" value="0">
+        <span class="ctrl-value" id="swing-val">0%</span>
+      </div>
+
+      <!-- 风格预设：一键应用 House/Techno/Trap/Bossa Nova 等经典节奏型 -->
+      <div class="ctrl-group">
+        <label>预设</label>
+        <select id="preset-select" onchange="applyPreset(this.value); this.value='';">
+          <option value="">选择预设...</option>
+          <option value="house">House</option>
+          <option value="techno">Techno</option>
+          <option value="trap">Trap</option>
+          <option value="bossa">Bossa Nova</option>
+        </select>
+      </div>
+
+      <!-- 音阶锁定：过滤网格只显示选中音阶内的音符，避免走音 -->
+      <div class="ctrl-group">
+        <label>音阶</label>
+        <select id="scale-select" onchange="changeScale(this.value)">
+          <option value="chromatic">全部</option>
+          <option value="pentatonic">五声</option>
+          <option value="major">大调</option>
+          <option value="minor">小调</option>
+          <option value="blues">布鲁斯</option>
+        </select>
+      </div>
+
+      <!-- 效果器开关：粒子特效、反向播放、混响、延迟、可视化、压缩 -->
+      <div class="ctrl-group">
+        <label>粒子</label>
+        <button class="particle-toggle on" id="btn-particles" onclick="toggleParticles()">✦</button>
+      </div>
+      <div class="ctrl-group">
+        <label>反向</label>
+        <button class="particle-toggle" id="btn-reverse" onclick="toggleReverse()">⏪</button>
+      </div>
+      <div class="ctrl-group">
+        <label>混响</label>
+        <button class="particle-toggle" id="btn-reverb" onclick="toggleReverb()">🌊</button>
+      </div>
+      <div class="ctrl-group">
+        <label>延迟</label>
+        <button class="particle-toggle" id="btn-delay" onclick="toggleDelay()">⏱</button>
+      </div>
+      <div class="ctrl-group">
+        <label>可视化</label>
+        <button class="particle-toggle" id="btn-viz" onclick="toggleVizMode()">频谱</button>
+      </div>
+      <div class="ctrl-group">
+        <label>压缩</label>
+        <button class="particle-toggle on" id="btn-comp" onclick="toggleCompressor()">🔊</button>
+      </div>
+      <button class="header-btn" onclick="shareLink()">🔗 分享</button>
+    </div>
+
+    <!-- 音频可视化区域：显示频谱或波形 -->
+    <!-- 音频可视化画布：频谱或波形实时绘制 -->
+    <div class="viz-area">
+      <canvas id="viz-canvas"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- 确认对话框模态框 -->
+<!-- 通用确认对话框 -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <h2 id="modal-title">确认</h2>
+    <p id="modal-msg">确定要执行此操作吗？</p>
+    <div class="modal-actions">
+      <button class="modal-btn confirm" id="modal-confirm">确定</button>
+      <button class="modal-btn cancel" onclick="hideModal()">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 音频裁剪模态框：用户上传音频后可选择最多1秒的片段 -->
+<div class="modal-overlay" id="crop-modal">
+  <div class="modal-box crop-box">
+    <h2>裁剪音频（最长1秒）</h2>
+    <p id="crop-info">拖动选择区域，不超过1秒</p>
+    <div class="crop-waveform-wrap">
+      <canvas id="crop-canvas" width="600" height="120"></canvas>
+      <div class="crop-region" id="crop-region"></div>
+      <div class="crop-overlay left" id="crop-overlay-left"></div>
+      <div class="crop-overlay right" id="crop-overlay-right"></div>
+    </div>
+    <div class="crop-timebar">
+      <span id="crop-start">0.00s</span>
+      <span id="crop-duration">2.00s</span>
+      <span id="crop-end">2.00s</span>
+    </div>
+    <div class="crop-actions">
+      <button class="modal-btn confirm" id="crop-confirm">确认裁剪</button>
+      <button class="modal-btn cancel" onclick="cancelCrop()">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast 提示消息：显示操作反馈（如保存成功、撤销等） -->
+<!-- Toast 提示消息：显示操作反馈（如保存成功、撤销等） -->
+<div class="toast" id="toast"></div>
+
+<!-- 快捷键帮助面板：右侧滑出，展示所有键盘与鼠标操作说明 -->
+<div class="help-panel" id="help-panel">
+  <div class="help-header">
+    <span>⌨ 快捷键</span>
+    <span class="help-close" onclick="toggleHelpPanel()">✕</span>
+  </div>
+  <div class="help-section">
+    <div class="help-title">播放控制</div>
+    <div class="help-row"><kbd>Space</kbd><span>播放 / 暂停</span></div>
+    <div class="help-row"><kbd>T</kbd><span>Tap Tempo 敲击测速</span></div>
+    <div class="help-row"><kbd>[</kbd> <kbd>]</kbd><span>BPM -5 / +5</span></div>
+    <div class="help-row"><kbd>-</kbd> <kbd>+</kbd><span>音量 -5 / +5</span></div>
+  </div>
+  <div class="help-section">
+    <div class="help-title">素材选择</div>
+    <div class="help-row"><kbd>1</kbd>~<kbd>8</kbd><span>选择素材槽 1-8</span></div>
+  </div>
+  <div class="help-section">
+    <div class="help-title">功能操作</div>
+    <div class="help-row"><kbd>S</kbd><span>保存</span></div>
+    <div class="help-row"><kbd>L</kbd><span>加载</span></div>
+    <div class="help-row"><kbd>R</kbd><span>随机生成</span></div>
+    <div class="help-row"><kbd>X</kbd><span>清空</span></div>
+    <div class="help-row"><kbd>E</kbd><span>导出音频</span></div>
+    <div class="help-row"><kbd>M</kbd><span>粒子特效 开/关</span></div>
+    <div class="help-row"><kbd>B</kbd><span>反向播放 开/关</span></div>
+    <div class="help-row"><kbd>W</kbd><span>混响 开/关</span></div>
+    <div class="help-row"><kbd>Q</kbd><span>延迟 开/关</span></div>
+    <div class="help-row"><kbd>H</kbd><span>显示/隐藏帮助面板</span></div>
+  </div>
+  <div class="help-section">
+    <div class="help-title">编辑操作 (Ctrl 组合)</div>
+    <div class="help-row"><kbd>Ctrl</kbd>+<kbd>Z</kbd><span>撤销</span></div>
+    <div class="help-row"><kbd>Ctrl</kbd>+<kbd>Y</kbd><span>重做</span></div>
+    <div class="help-row"><kbd>Ctrl</kbd>+<kbd>C</kbd><span>复制 Pattern</span></div>
+    <div class="help-row"><kbd>Ctrl</kbd>+<kbd>V</kbd><span>粘贴 Pattern</span></div>
+    <div class="help-row"><kbd>Ctrl</kbd>+<kbd>S</kbd><span>保存</span></div>
+  </div>
+  <div class="help-section">
+    <div class="help-title">鼠标操作</div>
+    <div class="help-row"><span class="help-mouse">单击格子</span><span>放置 → 力度1 → 力度2 → 力度3 → 移除</span></div>
+    <div class="help-row"><span class="help-mouse">M 按钮</span><span>静音/取消静音该行</span></div>
+    <div class="help-row"><span class="help-mouse">S 按钮</span><span>独奏该行</span></div>
+    <div class="help-row"><span class="help-mouse">🎲 按钮</span><span>随机该行</span></div>
+  </div>
+</div>
+
+<!-- 预设数据文件：猫叫 / 狗叫 / 哈基米音效 -->
+<script src="js/presets/cat.js"></script>
+<script src="js/presets/dog.js"></script>
+<script src="js/presets/hakimi.js"></script>
+<!-- 主逻辑文件 -->
+<script src="js/main.js"></script>
+</body>
+</html>
