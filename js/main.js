@@ -1186,14 +1186,22 @@ function renderAll() {
   renderSamplePresetSelect();
 }
 
-// 高亮当前正在播放的列：所有格子移除 play-col 类，当前列添加
+// 高亮当前播放的列：仅操作前后两列，避免全量遍历导致视觉滞后于声音
+let _prevPlayCol = -1;
 function updatePlayCol() {
-  document.querySelectorAll('.step-cell, .drum-cell').forEach(c => c.classList.remove('play-col'));
-  if (state.isPlaying && state.currentStep >= 0) {
-    document.querySelectorAll('.step-cell, .drum-cell').forEach(c => {
-      if (parseInt(c.dataset.col) === state.currentStep) c.classList.add('play-col');
-    });
+  const col = state.currentStep;
+  if (_prevPlayCol === col) return;
+  // 移除上一列高亮
+  if (_prevPlayCol >= 0) {
+    document.querySelectorAll('[data-col="' + _prevPlayCol + '"].step-cell, [data-col="' + _prevPlayCol + '"].drum-cell')
+      .forEach(c => c.classList.remove('play-col'));
   }
+  // 添加当前列高亮
+  if (state.isPlaying && col >= 0) {
+    document.querySelectorAll('[data-col="' + col + '"].step-cell, [data-col="' + col + '"].drum-cell')
+      .forEach(c => c.classList.add('play-col'));
+  }
+  _prevPlayCol = col;
 }
 
 // ================================================================
@@ -1641,6 +1649,16 @@ function tick() {
   // 根据方向前进或后退一步，16步循环
   state.currentStep = state.reverse ? (state.currentStep - 1 + COLS) % COLS : (state.currentStep + 1) % COLS;
 
+  // 先更新视觉高亮（确保进度条与声音同步，视觉不滞后）
+  updatePlayCol();
+
+  // 更新节拍转盘角度：每步旋转 360/16 = 22.5 度
+  const arm = document.getElementById('spinner-arm');
+  if (arm) {
+    const angle = (state.currentStep / COLS) * 360;
+    arm.style.transform = `rotate(${angle}deg)`;
+  }
+
   // 遍历所有旋律行，播放当前步进中激活的音符
   for (let r = 0; r < NOTE_ROWS; r++) {
     if (soloMode && !soloMelody.has(r)) continue; // 独奏模式：跳过非独奏行
@@ -1651,7 +1669,7 @@ function tick() {
       audio.playMelody(slotIdx, NOTES[r].freq, vel);
       // 若开启粒子特效，在对应格子上产生彩色粒子
       if (state.particles) {
-        const cell = document.querySelector(`.step-cell[data-row="${r}"][data-col="${state.currentStep}"]`);
+        const cell = document.querySelector('.step-cell[data-row="' + r + '"][data-col="' + state.currentStep + '"]');
         if (cell) spawnParticles(cell, samplePool[slotIdx]?.color || '#fff');
       }
     }
@@ -1664,19 +1682,10 @@ function tick() {
       const vel = drumVelGrid[r][state.currentStep] || 2;
       audio.playDrum(DRUMS[r].name, vel);
       if (state.particles) {
-        const cell = document.querySelector(`.drum-cell[data-row="${r}"][data-col="${state.currentStep}"]`);
+        const cell = document.querySelector('.drum-cell[data-row="' + r + '"][data-col="' + state.currentStep + '"]');
         if (cell) spawnParticles(cell, DRUMS[r].color);
       }
     }
-  }
-  // 高亮当前播放列
-  updatePlayCol();
-
-  // 更新节拍转盘角度：每步旋转 360/16 = 22.5 度
-  const arm = document.getElementById('spinner-arm');
-  if (arm) {
-    const angle = (state.currentStep / COLS) * 360;
-    arm.style.transform = `rotate(${angle}deg)`;
   }
 
   // 计算下一步的延迟时间（毫秒），包含 Swing 偏移
@@ -1692,6 +1701,7 @@ function stopPlay() {
   state.isPlaying = false;
   if (state.timer) { clearTimeout(state.timer); state.timer = null; }
   state.currentStep = -1;
+  _prevPlayCol = -1; // 重置列高亮缓存
   document.getElementById('btn-play').textContent = '▶';
   renderAll();
 }

@@ -442,11 +442,10 @@ html[data-theme="wire"] .drum-label .upload-btn.has-sample {
   box-shadow: var(--cell-shadow);
   border-color: currentColor;
 }
-/* 播放指示列：当前正在播放的整列高亮 */
+/* 播放指示列：当前正在播放的整列高亮（无过渡，确保与声音精确同步） */
 .step-cell.play-col {
   background: var(--accent-play);
   border-color: var(--accent);
-  transition: background 0.25s ease-out, border-color 0.25s ease-out, box-shadow 0.25s ease-out;
 }
 
 /* 音符力度视觉样式：vel-1 轻（半透明虚线）、vel-2 中（默认）、vel-3 重（放大发光脉冲） */
@@ -707,7 +706,6 @@ html[data-theme="ocean"] .drum-dice:hover {
 .drum-cell.play-col {
   background: var(--accent-play);
   border-color: var(--accent);
-  transition: background 0.25s ease-out, border-color 0.25s ease-out, box-shadow 0.25s ease-out;
 }
 
 /* 鼓力度视觉样式 */
