@@ -53,15 +53,25 @@ PawBeats 是一款基于 Web Audio API 的浏览器端音乐创作工具。所�
 
 PawBeats/
 ├── index.html              # 主页面
+
 ├── css/
+
 │   └── style.css           # 全局样式与主题
+
 ├── js/
+
 │   ├── main.js             # 核心逻辑（音频引擎、音序器、渲染等）
+
 │   └── presets/
+
 │       ├── cat.js          # 猫叫预设数据
+
 │       ├── dog.js          # 狗叫预设数据
+
 │       └── hakimi.js       # 哈基米预设数据
+
 └── pawbeats-doc/
+
     └── pawbeats-doc.html   # 程序编写说明文档
 
 
